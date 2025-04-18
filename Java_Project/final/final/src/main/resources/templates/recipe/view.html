@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+    <title>Recipe Details</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Recipe Details</h1>
+
+        <!-- Display recipe ID and recipe name -->
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Recipe Name:</h3>
+                <p th:text="${recipe.recipeName}"></p>
+            </div>
+			<div class="col-md-6">
+			    <h3>Recipe Intructions:</h3>
+			    <p th:text="${recipe.recipeInstructions}"></p>
+			</div>
+        </div>
+
+        <!-- Display list of ingredients associated with the recipe -->
+        <h3>Ingredients:</h3>
+        <ul>
+            <li th:each="recipeIngredient : ${recipe.recipeIngredients}">
+                <!-- Find and display the name of the ingredient associated with this recipeIngredient -->
+                <span th:text="${recipeIngredient.ingredient.ingredientName != null ? recipeIngredient.ingredient.ingredientName : 'Unknown'} + ' (' + (recipeIngredient.ingredient.ingredientUnit != null ? ${recipeIngredient.ingredient.ingredientUnit} : 'N/A') + ')'">Ingredient Name</span> - 
+                <span th:text="${recipeIngredient.quantity}">Quantity</span>
+            </li>
+        </ul>
+
+        <!-- Link to add a new recipe -->
+        <a th:href="@{/recipe/add}" class="btn btn-primary">Add New Recipe</a>
+
+        <!-- Link to go back to the recipe list -->
+        <a th:href="@{/recipe/list}" class="btn btn-success">Confirm</a>
+
+        <!-- Edit button -->
+        <a th:href="@{/recipe/edit/{recipeId}(recipeId=${recipe.recipeId})}" class="btn btn-warning">Edit Recipe</a>
+    </div>
+</body>
+</html>

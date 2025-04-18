@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+
+<head>
+    <title>Ingredient List</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+</head>
+<body>
+    <th:block layout:fragment="content">
+        <div class="container">
+            <h1>Ingredient List</h1>
+			<a th:href="@{/recipe/list}" class="btn btn-primary">Edit Recipe List</a>
+			<a th:href="@{/ingredient/add}" class="btn btn-primary">Add New Ingredient</a>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Ingredient Name</th>
+						<th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="ingredient : ${ingredients}">
+                        <td th:text="${ingredient.ingredientName != null ? ingredient.ingredientName : 'Unknown'} + ' (' + (ingredient.ingredientUnit != null ? ${ingredient.ingredientUnit} : 'N/A') + ')'">Ingredient Name</td>
+						<td>
+						    <a th:href="@{/ingredient/edit/{ingredientId}(ingredientId=${ingredient.ingredientId})}" class="btn btn-warning">Edit Ingredient</a>
+							<a th:href="@{/ingredient/view/{ingredientId}(ingredientId=${ingredient.ingredientId})}" class="btn btn-success">View Ingredient</a>
+						</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </th:block>
+</body>
+</html>

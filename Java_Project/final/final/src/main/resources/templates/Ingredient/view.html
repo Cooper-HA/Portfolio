@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+    <title>Ingredient Details</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Ingredient Details</h1>
+
+        <!-- Display ingredient ID and ingredient name -->
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Ingredient Name:</h3>
+                <p th:text="${ingredient.ingredientName}"></p>
+            </div>
+			<div class="col-md-6">
+			    <h3>Ingredient Unit:</h3>
+			    <p th:text="${ingredient.ingredientUnit}"></p>
+			</div>
+        </div>
+
+
+        <!-- Link to add a new ingredient -->
+        <a th:href="@{/ingredient/add}" class="btn btn-primary">Add New Ingredient</a>
+
+        <!-- Link to go back to the ingredient list -->
+        <a th:href="@{/ingredient/list}" class="btn btn-success">Confirm</a>
+
+        <!-- Edit button -->
+        <a th:href="@{/ingredient/edit/{ingredientId}(ingredientId=${ingredient.ingredientId})}" class="btn btn-warning">Edit Ingredient</a>
+    </div>
+</body>
+</html>
