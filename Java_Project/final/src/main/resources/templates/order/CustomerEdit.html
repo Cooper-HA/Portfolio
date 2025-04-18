@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/layout}">
+<head>
+    <title>Edit Order</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/css/core.css" th:href="@{/css/core.css}" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+</head>
+<body>
+<!-- Content Section -->
+<th:block layout:fragment="content">
+    <div class="container my-5">
+        <h2 class="mb-4 text-center">Edit Order</h2>
+        <form th:object="${orderForm}" th:action="@{/customer/edit}" method="post" class="bg-white p-4 rounded shadow-sm">
+            <!-- Customer Name -->
+            <div class="mb-3">
+                <label for="customerName" class="form-label">Customer Name</label>
+                <input type="text" id="customerName" th:value="*{customerName}" name="customerName" class="form-control" placeholder="Enter customer name" required />
+            </div>
+
+            <!-- Recipe Selection -->
+            <div class="mb-3">
+                <label for="recipe-select" class="form-label">Select Recipe</label>
+                <div class="input-group">
+                    <select id="recipe-select" class="form-select">
+                        <option value="0">Select a Recipe</option>
+                        <option th:each="rec : ${recipes}" th:value="${rec.recipeId}" th:text="${rec.recipeName}"></option>
+                    </select>
+                    <input type="number" id="quantity" name="quantity" class="form-control" min="1" value="1" placeholder="Quantity" />
+                    <button type="button" id="add-recipe-btn" class="btn btn-primary">Add</button>
+                </div>
+            </div>
+
+            <!-- Selected Recipes -->
+            <div class="mb-3">
+                <h4>Selected Recipes</h4>
+                <ul id="selected-recipes" class="list-group">
+                    <!-- Dynamically added recipes will appear here -->
+                </ul>
+            </div>
+
+            <!-- Hidden Inputs -->
+            <input type="hidden" name="recipeList" th:value="*{recipeList}" id="recipeListInput" />
+            <input type="hidden" name="quantities" th:value="*{quantities}" id="quantitiesInput" />
+            <input type="hidden" name="orderId" th:value="*{orderId}" id="orderIdInput" />
+
+            <!-- Submit Button -->
+			<div class="text-center">
+			    <!-- Submit Order -->
+			    <button type="submit" class="btn btn-success">Submit Order</button>
+
+			    <!-- Cancel -->
+			    <a href="http://localhost:8085/" class="btn btn-secondary">Cancel</a>
+			</div>
+        </form>
+    </div>
+
+    <!-- JavaScript Section -->
+	<script>
+	    // Function to populate the selected recipes list from the hidden inputs
+	    function populateSelectedRecipes() {
+	        var recipeList = document.getElementById("recipeListInput").value.split(",");
+	        var quantities = document.getElementById("quantitiesInput").value.split(",");
+			console.log(recipeList);
+			document.getElementById("quantitiesInput").value = quantities.map(q => {return q.replace(/[\[\]]/g, "")}).join(",");
+			document.getElementById("recipeListInput").value = recipeList.map(r => {return r.replace(/[\[\]]/g, "")}).join(",");
+			recipeList = document.getElementById("recipeListInput").value.split(",")
+			quantities = document.getElementById("quantitiesInput").value.split(",");
+	        recipeList.forEach((recipeId, index) => {
+				console.log(recipeId);
+	            if (recipeId) {
+	                var recipeSelect = document.getElementById("recipe-select");
+					var match = Array.from(recipeSelect.options).find(option => parseInt(option.value) === parseInt(recipeId.replace(/[\[\]]/g, "")));
+					var recipeName = match ? match.text.replace(/[\[\]]/g, "") : "Unknown Recipe";
+					console.log(recipeName);
+					console.log(recipeSelect.options);
+
+					if (recipeName) {
+					    const li = document.createElement("li");
+					    li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+					    li.textContent = `${recipeName} (Quantity: ${quantities[index]})`;
+
+					    const removeBtn = document.createElement("button");
+					    removeBtn.textContent = "Remove";
+					    removeBtn.classList.add("btn", "btn-danger", "btn-sm");
+					    removeBtn.addEventListener("click", function () {
+					        li.remove();
+					        updateRecipeListInput();
+					    });
+
+					    li.appendChild(removeBtn);
+					    document.getElementById("selected-recipes").appendChild(li);
+					}
+	            }
+	        });
+	    }
+
+	    // Function to update the hidden inputs
+	    function updateRecipeListInput() {
+	        var selectedRecipes = [];
+	        var quantities = [];
+	        var recipeItems = document.querySelectorAll("#selected-recipes li");
+
+	        recipeItems.forEach(function (item) {
+	            selectedRecipes.push(item.getAttribute("data-recipe-id"));
+	            quantities.push(item.getAttribute("data-quantity"));
+	        });
+
+	        document.getElementById("recipeListInput").value = selectedRecipes.join(",");
+	        document.getElementById("quantitiesInput").value = quantities.join(",");
+	    }
+
+	    // Add a recipe to the list
+	    document.getElementById("add-recipe-btn").addEventListener("click", function () {
+	        var recipeId = document.getElementById("recipe-select").value;
+	        var recipeName = document.getElementById("recipe-select").options[document.getElementById("recipe-select").selectedIndex].text;
+	        var quantity = document.getElementById("quantity").value;
+
+	        // Check if a valid recipe is selected
+			if (recipeId !== "0") {
+			    const li = document.createElement("li");
+			    li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+			    li.textContent = `${recipeName} (Quantity: ${quantity})`;
+
+				li.setAttribute("data-recipe-id", recipeId);
+				li.setAttribute("data-quantity", quantity);
+				
+			    const removeBtn = document.createElement("button");
+			    removeBtn.textContent = "Remove";
+			    removeBtn.classList.add("btn", "btn-danger", "btn-sm");
+			    removeBtn.addEventListener("click", function () {
+			        li.remove();
+			        updateRecipeListInput();
+			    });
+
+			    li.appendChild(removeBtn);
+			    document.getElementById("selected-recipes").appendChild(li);
+			    updateRecipeListInput();
+			}	    
+		});
+	    // Populate the selected recipes list on page load
+	    document.addEventListener("DOMContentLoaded", populateSelectedRecipes);
+	</script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/layout}">
+<head>
+    <title>Edit Ingredient</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/css/core.css" th:href="@{/css/core.css}" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+</head>
+<body>
+<!-- Content Section -->
+<th:block layout:fragment="content">
+    <div class="container my-5">
+        <h2 class="mb-4 text-center">Edit Ingredient</h2>
+		<form th:object="${editIngredientForm}" th:action="@{/ingredient/edit}" method="post" class="bg-white p-4 rounded shadow-sm">
+            <!-- Ingredient Name -->
+            <div class="mb-3">
+                <label for="ingredientName" class="form-label">Ingredient Name</label>
+                <input type="text" id="ingredientName" th:value="*{ingredientName}" name="ingredientName" class="form-control" placeholder="Enter ingredient name" required />
+            </div>
+			<div class="mb-3">
+			    <label for="ingredientUnit" class="form-label">Ingredient Unit</label>
+			    <input type="text" id="ingredientUnit" th:value="*{ingredientUnit}" name="ingredientUnit" class="form-control" placeholder="Enter ingredient unit" required />
+			</div>
+
+
+            <input type="hidden" name="ingredientId" th:value="*{ingredientId}" id="ingredientIdInput" />
+
+            <!-- Submit Button -->
+			<div class="text-center">
+			    <!-- Submit Ingredient -->
+			    <button type="submit" class="btn btn-success">Submit Ingredient</button>
+
+			    <!-- Delete Ingredient -->
+			    <button type="button" id="finish-ingredient-btn" class="btn btn-danger">Delete Ingredient</button>
+
+			    <!-- Cancel -->
+			    <a href="http://localhost:8085/ingredient/list" class="btn btn-primary">Cancel</a>
+			</div>
+        </form>
+    </div>
+
+</th:block>
+</body>
+</html>

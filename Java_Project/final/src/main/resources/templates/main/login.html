@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login Page</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/Login.css" rel="stylesheet" />
+    <link href="../static/css/core.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+</head>
+<body>
+    <div class="login-container">
+        <form th:action="@{/order/list}" id="Login-Check" th:object="${loginForm}">
+            <div class="login-card">
+                <h2 id="title">Login</h2>
+                <p id="description">Enter your username and password.</p>
+                
+                <div class="login-form">
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Username"
+                        required
+                        class="input-field"
+                    />
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Password"
+                        required
+                        class="input-field"
+                    />
+                    
+                    <p id="error-message" class="error-message" style="display: none;">Invalid username or password</p>
+                    <button type="submit" id="action-button" class="login-btn">Log In</button>
+                    
+                    <input type="hidden" name="users" id="usersInput" th:value="${users}" />
+                </div>
+            </div>
+        </form>
+    </div>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script>
+		let data = "";
+		axios.get('http://localhost:8085/api/users')
+		    .then(response => {
+		        data = response.data;
+		        console.log(data); // Now data will be updated correctly
+
+
+		        // Add event listener for the form submission
+		        document.getElementById('Login-Check').addEventListener('submit', async function (event) {
+		            event.preventDefault(); // Prevent default form submission
+		
+		            const username = document.getElementById('username').value;
+		            const password = document.getElementById('password').value;
+		            const errorMessage = document.getElementById('error-message');
+		            const usersInput = document.getElementById('usersInput').value;
+		
+		            try {
+		                // Fetch additional users from the server
+		                const users = data;
+						console.log(users[0].userPswd);
+		                // Combine local and server users
+		
+		                // Check if the username and password match
+		                const userFound = users.some(user => user.userName === username && user.userPswd === password);
+		
+		                if (!userFound) {
+		                    errorMessage.style.display = 'block';
+		                } else {
+		                    errorMessage.style.display = 'none';
+		                    event.target.submit(); // Submit the form if valid
+		                }
+		            } catch (error) {
+		                console.error("Error during login validation:", error);
+		                errorMessage.textContent = "An error occurred while validating your login. Please try again.";
+		                errorMessage.style.display = 'block';
+		            }
+		        });
+				})
+		.catch(error => console.error(error));
+    </script>
+</body>
+</html>
